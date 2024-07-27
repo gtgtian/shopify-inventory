@@ -1,0 +1,8 @@
+<ul>
+    <li *ngFor="let product of products">
+      {{ product.name }} - {{ product.description }} - {{ product.price }}
+      <button (click)="onEdit(product)">Edit</button>
+      <button (click)="onDelete(product.id)">Delete</button>
+    </li>
+  </ul>
+  
