@@ -1,2 +1,0 @@
-# shopify-inventory
-Angular App
