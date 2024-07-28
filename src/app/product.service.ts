@@ -1,29 +1,58 @@
+// export class ProductService {
+//   private apiUrl = 'https://your-backend-service.com/api/products';
+
+//   constructor(private http: HttpClient) { }
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { Product } from './models/product.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'https://your-backend-service.com/api/products';
 
-  constructor(private http: HttpClient) { }
+  private storageKey = 'products';
 
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl);
+  constructor() { }
+
+  getProductsFromStorage(): Product[] {
+    const products = localStorage.getItem(this.storageKey);
+    return products ? JSON.parse(products) : [];
   }
 
-  addProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
+  private saveProductsToStorage(products: Product[]): void {
+    localStorage.setItem(this.storageKey, JSON.stringify(products));
   }
 
-  updateProduct(id: string, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}`, product);
+  getProducts(): Product[] {
+    return this.getProductsFromStorage();
   }
 
-  deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  getProduct(id: number): Product | undefined {
+    const products = this.getProductsFromStorage();
+    return products.find(p => p.id === id);
+  }
+
+  addProduct(product: Product): void {
+    const products = this.getProductsFromStorage();
+    product.id = products.length ? Math.max(...products.map(p => p.id!)) + 1 : 1;
+    products.push(product);
+    this.saveProductsToStorage(products);
+  }
+
+  updateProduct(updatedProduct: Product): void {
+    const products = this.getProductsFromStorage();
+    const index = products.findIndex(p => p.id === updatedProduct.id);
+    if (index > -1) {
+      products[index] = updatedProduct;
+      this.saveProductsToStorage(products);
+    } else {
+      throw new Error('Product not found');
+    }
+  }
+
+  deleteProduct(id: number): void {
+    let products = this.getProductsFromStorage();
+    products = products.filter(p => p.id !== id);
+    this.saveProductsToStorage(products);
   }
 }

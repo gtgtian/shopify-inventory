@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Product } from '../models/product.model';
 
@@ -7,7 +7,7 @@ import { Product } from '../models/product.model';
   templateUrl: './product-form.component.html',
   styleUrls: ['./product-form.component.css']
 })
-export class ProductFormComponent {
+export class ProductFormComponent implements OnChanges {
   @Input() product: Product | null = null;
   @Output() save = new EventEmitter<Product>();
   form: FormGroup;
@@ -17,6 +17,8 @@ export class ProductFormComponent {
       name: ['', Validators.required],
       description: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
+      category: [''],
+      stockQuantity: ['']
     });
   }
 

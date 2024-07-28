@@ -1,8 +1,9 @@
 export interface Product {
-    id?: string;
+    id?: number;  // Change id type to number
     name: string;
     description: string;
     price: number;
-    [key: string]: any;
+    category?: string;
+    stockQuantity?: number;
   }
   

@@ -9,6 +9,7 @@ import { Product } from '../models/product.model';
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
+  selectedProduct: Product | null = null;
 
   constructor(private productService: ProductService) { }
 
@@ -16,19 +17,27 @@ export class ProductListComponent implements OnInit {
     this.loadProducts();
   }
 
-  loadProducts() {
-    this.productService.getProducts().subscribe(products => {
-      this.products = products;
-    });
+  loadProducts(): void {
+    this.products = this.productService.getProducts();
   }
 
-  onDelete(id: string) {
-    this.productService.deleteProduct(id).subscribe(() => {
-      this.loadProducts();
-    });
+  onSave(product: Product): void {
+    if (this.selectedProduct) {
+      product.id = this.selectedProduct.id;
+      this.productService.updateProduct(product);
+    } else {
+      this.productService.addProduct(product);
+    }
+    this.selectedProduct = null;
+    this.loadProducts();
   }
 
-  onEdit(product: Product) {
-    // Implement edit logic
+  onEdit(product: Product): void {
+    this.selectedProduct = product;
+  }
+
+  onDelete(id: number): void {
+    this.productService.deleteProduct(id);
+    this.loadProducts();
   }
 }
